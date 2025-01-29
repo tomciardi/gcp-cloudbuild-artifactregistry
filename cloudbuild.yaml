@@ -34,22 +34,22 @@ steps:
         apptainer build /workspace/hello-world.sif \
           docker://us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}
 
+  # Store SIF files in Generic repository
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+      - 'artifacts'
+      - 'generic'
+      - 'upload'
+      - '--location=us-east5'
+      - '--repository=python-hello-world-sif'
+      - '--source=/workspace/hello-world.sif'
+      - '--package=hello-world'
+      - '--version=${SHORT_SHA}'
+
 # Store Docker images in Docker repository
 images:
   - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}
   - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest
-
-# Store SIF files in Generic repository
-- name: 'gcr.io/cloud-builders/gcloud'
-  args:
-    - 'artifacts'
-    - 'generic'
-    - 'upload'
-    - '--location=us-east5'
-    - '--repository=python-hello-world-sif'
-    - '--source=/workspace/hello-world.sif'
-    - '--package=hello-world'
-    - '--version=${SHORT_SHA}'
 
 options:
   logging: CLOUD_LOGGING_ONLY
