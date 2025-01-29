@@ -14,12 +14,36 @@ steps:
 
   # Docker push to Google Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push',  'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}']
+    args: ['push', 'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}']
+  
+  # Also push latest tag
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest']
 
-# Store images in Google Artifact Registry 
+  # Convert to Apptainer/SIF
+  - name: 'ubuntu:22.04'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        apt-get update && \
+        apt-get install -y software-properties-common && \
+        add-apt-repository -y ppa:apptainer/ppa && \
+        apt-get update && \
+        apt-get install -y apptainer-suid && \
+        apptainer build /workspace/hello-world_${SHORT_SHA}.sif \
+          docker://us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}
+
+# Store Docker images in Docker repository
 images:
   - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}
   - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest
+
+# Store SIF files in Generic repository
+artifacts:
+  objects:
+    location: 'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world-sif'
+    paths: ['hello-world_${SHORT_SHA}.sif']
 
 options:
   logging: CLOUD_LOGGING_ONLY
