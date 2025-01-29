@@ -5,4 +5,4 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-CMD[ "python", "./hello_world.py" ]
+CMD [ "python", "./hello_world.py" ]
