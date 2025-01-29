@@ -20,3 +20,6 @@ steps:
 images:
   - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}
   - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY
