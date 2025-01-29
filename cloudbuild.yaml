@@ -31,7 +31,7 @@ steps:
         add-apt-repository -y ppa:apptainer/ppa && \
         apt-get update && \
         apt-get install -y apptainer-suid && \
-        apptainer build /workspace/hello-world_${SHORT_SHA}.sif \
+        apptainer build /workspace/hello-world.sif \
           docker://us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}
 
 # Store Docker images in Docker repository
@@ -40,10 +40,16 @@ images:
   - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest
 
 # Store SIF files in Generic repository
-artifacts:
-  objects:
-    location: 'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world-sif'
-    paths: ['hello-world_${SHORT_SHA}.sif']
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'artifacts'
+    - 'generic'
+    - 'upload'
+    - '--location=us-east5'
+    - '--repository=python-hello-world-sif'
+    - '--source=/workspace/hello-world.sif'
+    - '--package=hello-world'
+    - '--version=${SHORT_SHA}'
 
 options:
   logging: CLOUD_LOGGING_ONLY
