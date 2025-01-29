@@ -1,0 +1,22 @@
+steps:
+  # Docker build
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+            'build',
+            '-t',
+            'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}',
+            '-t',
+            'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest',
+            '--cache-from',
+            'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest',
+            '.'
+          ]
+
+  # Docker push to Google Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push',  'us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}']
+
+# Store images in Google Artifact Registry 
+images:
+  - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:${SHORT_SHA}
+  - us-east5-docker.pkg.dev/local-pier-449315-t3/python-hello-world/hello-world:latest
